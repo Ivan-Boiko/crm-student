@@ -373,9 +373,7 @@ const createModalAddStudent = function () {
   btnAddContact.type = 'button';
   modal.append(modalOverlay);
   modalOverlay.append(modalContainer);
-
-
-
+  modalChangesAction(form);
 
   modalContainer.append(
     title,
@@ -384,6 +382,7 @@ const createModalAddStudent = function () {
     btnClose,
     divContactContainer
   );
+
   divBtnContainer.append(btnSave, btnCancel);
   form.append(
     inputSureName,
@@ -393,6 +392,7 @@ const createModalAddStudent = function () {
     btnAddContact,
     divBtnContainer
   );
+
   return {
     modal,
     btnClose,
@@ -437,7 +437,6 @@ const createContact = function () {
 
   btnClose.type = 'button';
 
-  
   select.append(telOption, secondTelOption, mailOption, vkOption, fbOption);
   return contact;
 };
@@ -594,7 +593,7 @@ const sort = () => {
     if (el.target.classList.contains('table-students__btn--id')) {
       studentsMass.sort(byFieldGrowth('id'));
       createNewMassStudent(studentsMass, newMass);
-      console.log(studentsMass, newMass)
+      console.log(studentsMass, newMass);
     }
     if (el.target.classList.contains('table-students__btn--name')) {
       studentsMass.sort(byFieldGrowth('surname'));
@@ -698,13 +697,12 @@ const deleteStudentFunc = function (tBody, btnDelete, modalOverlay, id = '') {
     let parentTarget = target.parentNode;
     id = target.dataset.id;
 
-      modalClose(modalOverlay, e.target.closest('.modal'));
-      await deleteFunc(id);
-      parentTarget.closest('.table__row-student').remove();
-      if (tBody.childNodes.length === 0) {
-        notFound.classList.add('student__div-error_action');
-      }
-    
+    modalClose(modalOverlay, e.target.closest('.modal'));
+    await deleteFunc(id);
+    parentTarget.closest('.table__row-student').remove();
+    if (tBody.childNodes.length === 0) {
+      notFound.classList.add('student__div-error_action');
+    }
   };
   tBody.addEventListener('click', (e) => {
     target = e.target;
@@ -715,14 +713,13 @@ const deleteStudentFunc = function (tBody, btnDelete, modalOverlay, id = '') {
 };
 
 const deleteContact = function (contacts) {
-  if (contacts === undefined || contacts === "") {
+  if (contacts === undefined || contacts === '') {
     return;
   }
   setTimeout(() => {
-  contacts.innerHTML = '';
-  contacts.classList.remove('contacts--flex');
+    contacts.innerHTML = '';
+    contacts.classList.remove('contacts--flex');
   }, 500);
-  
 };
 
 //Функция для создания модального окна в случае успешного добавления студента
@@ -844,12 +841,12 @@ const changeStudentFunc = async function (
   form.surname.value = student.surname;
   form.name.value = student.name;
   form.lastname.value = student.lastName;
-  
+
   divContactContainer.innerHTML = '';
 
   student.contacts.forEach(function (obj) {
     const massContact = [];
-    if(massContact.length === 0) {
+    if (massContact.length === 0) {
       divContactContainer.classList.remove('contacts--flex');
     }
     const contact = createContact();
@@ -884,12 +881,12 @@ const addStudentAfterChange = function (
   modalId
 ) {
   let studenInfo = {};
-  let studentStr = {}
+  let studentStr = {};
   tBody.addEventListener('click', async (event) => {
     const target = event.target;
-    
+
     if (target.classList.contains('table__btn-student--change')) {
-      studentStr.str = target.closest(".table__row-student")
+      studentStr.str = target.closest('.table__row-student');
       const changeStudent = await changeStudentFunc(
         target,
         form,
@@ -901,11 +898,18 @@ const addStudentAfterChange = function (
       studenInfo.contactContainers = changeStudent.contactContainers;
     }
   });
-  
+
   form.addEventListener('click', (event) => {
     const targetForm = event.target;
     if (targetForm.classList.contains('modal__btn--delete-change')) {
-      deleteStudentInChangeModal(modalDeleteFunc, divContactContainer, studenInfo.id, tBody, modalOverlay, studentStr.str);
+      deleteStudentInChangeModal(
+        modalDeleteFunc,
+        divContactContainer,
+        studenInfo.id,
+        tBody,
+        modalOverlay,
+        studentStr.str
+      );
     }
   });
 
@@ -938,7 +942,6 @@ const addStudentAfterChange = function (
   form.addEventListener('submit', sendDate);
 };
 
-
 const errorsServer = function () {
   const divError = document.createElement('div');
   divError.classList.add('modal__error-server');
@@ -946,52 +949,56 @@ const errorsServer = function () {
   return divError;
 };
 
-
-const deleteStudentInChangeModal = function (modalDeleteFunc, divContactContainer ,fullID, tBody, modalOverlay, studentStr) {
-  console.log(fullID)
+const deleteStudentInChangeModal = function (
+  modalDeleteFunc,
+  divContactContainer,
+  fullID,
+  tBody,
+  modalOverlay,
+  studentStr
+) {
+  console.log(fullID);
   const modal = modalDeleteFunc.modalDelete;
-  
-  
+
   //"Одинаковые модалки modalOverlay и parentOverlay"
 
   modalOverlay.classList.remove('modal__overlay--visible');
   modal.classList.add('model__delete-window');
-  const modalOverlayV = modal.querySelector(".modal__overlay")
+  const modalOverlayV = modal.querySelector('.modal__overlay');
   modalOverlayV.classList.add('modal__overlay--visible');
   root.append(modalDeleteFunc.modalDelete);
-  console.log(modalOverlayV)
+  console.log(modalOverlayV);
 
   const deleteStudentInModal = async function (event) {
-  const targetModal = event.target
-  const notFound = document.querySelector('.student__div-error');
+    const targetModal = event.target;
+    const notFound = document.querySelector('.student__div-error');
 
-  if (targetModal.classList.contains('modal__btn--cancel')) {
-    modalOverlayV.classList.remove('modal__overlay--visible');
-    modalOverlay.classList.add('modal__overlay--visible');
-  }
-
-  if (targetModal.classList.contains('modal__overlay')) {
-    modalOverlayV.classList.remove('modal__overlay--visible');
-    modalOverlay.classList.remove('modal__overlay--visible');
-  }
-
-  if (targetModal.classList.contains('modal__btn--delete')) {
-    await deleteFunc(fullID);
-    studentStr.remove()
-    modalOverlayV.classList.remove('modal__overlay--visible');
-    const modal = targetModal.closest('.model__delete-window');
-    targetModal.closest('.modal').remove();
-
-    modal.removeEventListener('click', deleteStudentInModal)
-    modalClose(modalOverlayV, modal, divContactContainer);
-    if (tBody.childNodes.length === 0) {
-      notFound.classList.add('student__div-error_action');
-    }
-  }
+    if (targetModal.classList.contains('modal__btn--cancel')) {
+      modalOverlayV.classList.remove('modal__overlay--visible');
+      modalOverlay.classList.add('modal__overlay--visible');
     }
 
-  modal.addEventListener('click', deleteStudentInModal)
-  
+    if (targetModal.classList.contains('modal__overlay')) {
+      modalOverlayV.classList.remove('modal__overlay--visible');
+      modalOverlay.classList.remove('modal__overlay--visible');
+    }
+
+    if (targetModal.classList.contains('modal__btn--delete')) {
+      await deleteFunc(fullID);
+      studentStr.remove();
+      modalOverlayV.classList.remove('modal__overlay--visible');
+      const modal = targetModal.closest('.model__delete-window');
+      targetModal.closest('.modal').remove();
+
+      modal.removeEventListener('click', deleteStudentInModal);
+      modalClose(modalOverlayV, modal, divContactContainer);
+      if (tBody.childNodes.length === 0) {
+        notFound.classList.add('student__div-error_action');
+      }
+    }
+  };
+
+  modal.addEventListener('click', deleteStudentInModal);
 };
 
 //Функция отвечающая за сброс формы ,создания пустого поля контакты, а так же удаления поля контакты
@@ -1010,14 +1017,13 @@ const modalChangesAction = function (form) {
     }
     if (target.classList.contains('contacts__btn')) {
       target.parentElement.remove();
-      console.log()
-      if(contactContainer.innerHTML === "") {
+      console.log();
+      if (contactContainer.innerHTML === '') {
         contactContainer.classList.remove('contacts--flex');
       }
     }
   });
 };
-
 
 // const customizationSelect = function(elem) {
 //   const choices = new Choices(elem, {
@@ -1062,9 +1068,7 @@ const createApp = function () {
 
   sort();
   searchStudent(createHeadFunc.inputSearch, createMainFunc.tBody, noFoundElem);
-  
 };
-
 
 const animationLoad = function () {
   const divContainer = document.createElement('div');
